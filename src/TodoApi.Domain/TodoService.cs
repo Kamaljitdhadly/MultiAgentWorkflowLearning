@@ -54,6 +54,28 @@ public class TodoService : ITodoService
         return false;
     }
 
+    public bool MarkComplete(int id, bool isComplete)
+    {
+        while (_todos.TryGetValue(id, out var existing))
+        {
+            var updated = new TodoItem
+            {
+                Id = existing.Id,
+                Title = existing.Title,
+                IsComplete = isComplete,
+                CreatedAt = existing.CreatedAt
+            };
+
+            if (_todos.TryUpdate(id, updated, existing))
+            {
+                return true;
+            }
+            // existing changed concurrently (another update, or it was deleted) — retry against current state
+        }
+
+        return false;
+    }
+
     public bool Delete(int id)
     {
         return _todos.TryRemove(id, out _);

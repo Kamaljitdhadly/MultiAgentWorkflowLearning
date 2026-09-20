@@ -61,9 +61,22 @@ todos.MapDelete("/{id:int}", (int id, ITodoService service) =>
     return deleted ? Results.NoContent() : Results.NotFound();
 });
 
+todos.MapPatch("/{id:int}/complete", (int id, MarkCompleteRequest request, ITodoService service) =>
+{
+    var updated = service.MarkComplete(id, request.IsComplete);
+    if (!updated)
+    {
+        return Results.NotFound();
+    }
+
+    var todo = service.GetById(id);
+    return Results.Ok(todo);
+});
+
 app.Run();
 
 public record CreateTodoRequest(string Title);
 public record UpdateTodoRequest(string Title, bool IsComplete);
+public record MarkCompleteRequest(bool IsComplete);
 
 public partial class Program { }

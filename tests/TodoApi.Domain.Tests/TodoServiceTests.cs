@@ -129,6 +129,75 @@ public class TodoServiceTests
     }
 
     [Fact]
+    public void MarkComplete_SetsIsCompleteTrue_ReturnsTrue_WhenExists()
+    {
+        // Arrange
+        var service = new TodoService();
+        var created = service.Create("Buy milk");
+
+        // Act
+        var result = service.MarkComplete(created.Id, true);
+
+        // Assert
+        Assert.True(result);
+        var updated = service.GetById(created.Id);
+        Assert.NotNull(updated);
+        Assert.True(updated!.IsComplete);
+    }
+
+    [Fact]
+    public void MarkComplete_SetsIsCompleteFalse_ReturnsTrue_WhenExists()
+    {
+        // Arrange
+        var service = new TodoService();
+        var created = service.Create("Buy milk");
+        service.MarkComplete(created.Id, true);
+
+        // Act
+        var result = service.MarkComplete(created.Id, false);
+
+        // Assert
+        Assert.True(result);
+        var updated = service.GetById(created.Id);
+        Assert.NotNull(updated);
+        Assert.False(updated!.IsComplete);
+    }
+
+    [Fact]
+    public void MarkComplete_ReturnsFalse_WhenIdDoesNotExist()
+    {
+        // Arrange
+        var service = new TodoService();
+
+        // Act
+        var exception = Record.Exception(() => service.MarkComplete(999, true));
+        var result = service.MarkComplete(999, true);
+
+        // Assert
+        Assert.Null(exception);
+        Assert.False(result);
+    }
+
+    [Fact]
+    public void MarkComplete_DoesNotChangeTitleIdOrCreatedAt()
+    {
+        // Arrange
+        var service = new TodoService();
+        var created = service.Create("Buy milk");
+
+        // Act
+        var result = service.MarkComplete(created.Id, true);
+
+        // Assert
+        Assert.True(result);
+        var updated = service.GetById(created.Id);
+        Assert.NotNull(updated);
+        Assert.Equal(created.Title, updated!.Title);
+        Assert.Equal(created.Id, updated.Id);
+        Assert.Equal(created.CreatedAt, updated.CreatedAt);
+    }
+
+    [Fact]
     public void Delete_RemovesItem_ReturnsTrue_WhenExists()
     {
         // Arrange
