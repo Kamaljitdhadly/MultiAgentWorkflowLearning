@@ -6,5 +6,6 @@ public interface ITodoService
     TodoItem? GetById(int id);
     TodoItem Create(string title);
     bool Update(int id, string title, bool isComplete); // false = not found
+    bool MarkComplete(int id, bool isComplete);          // false = not found
     bool Delete(int id);                                 // false = not found
 }
